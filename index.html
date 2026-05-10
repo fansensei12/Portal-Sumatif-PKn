@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Exam Portal - Media Google Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; overflow: hidden; }
+        .locked-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 64px);
+            border: none;
+        }
+        .shaking {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Screen: Teacher Configuration (Hidden by default for students) -->
+    <div id="setup-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">Konfigurasi Ujian (Guru)</h1>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Link Google Form</label>
+                    <input type="text" id="config-url" placeholder="https://docs.google.com/forms/..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50 border">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
+                        <input type="datetime-local" id="config-start" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50 border text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
+                        <input type="datetime-local" id="config-end" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50 border text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Token Reset (Untuk Siswa)</label>
+                    <input type="text" id="config-token" value="BISA" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50 border font-mono">
+                </div>
+                <button onclick="startApp()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Aktifkan Mode Ujian</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Student Login -->
+    <div id="login-screen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+            <div id="timer-status" class="mb-4 text-sm font-bold p-2 rounded-full"></div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2" id="exam-title">Pintu Masuk Ujian</h1>
+            <p class="text-gray-500 mb-6 italic">Jangan keluar dari tab atau browser selama ujian berlangsung.</p>
+            <div class="space-y-4">
+                <input type="text" id="student-name" placeholder="Nama Lengkap Siswa" class="block w-full border-gray-300 rounded-md shadow-sm p-3 bg-gray-50 border text-center uppercase">
+                <button id="btn-enter" onclick="enterExam()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400" disabled>Mulai Mengerjakan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Exam Interface -->
+    <div id="exam-screen" class="hidden h-screen flex flex-col">
+        <header class="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm">
+            <div class="flex items-center space-y-0 space-x-4">
+                <div class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">SEDANG UJIAN</div>
+                <span id="display-student-name" class="font-bold text-gray-700 uppercase"></span>
+            </div>
+            <div id="countdown" class="text-red-600 font-mono font-bold text-xl">00:00:00</div>
+        </header>
+        <div class="flex-grow bg-gray-200" id="iframe-container">
+            <!-- Iframe will be injected here -->
+        </div>
+    </div>
+
+    <!-- Screen: Locked Overlay -->
+    <div id="locked-overlay" class="locked-overlay flex flex-col items-center justify-center text-white p-6">
+        <div class="max-w-md w-full text-center space-y-6" id="lock-content">
+            <div class="text-6xl mb-4">🚫</div>
+            <h2 class="text-3xl font-bold text-red-500">Akses Terkunci!</h2>
+            <p class="text-lg">Anda terdeteksi meninggalkan halaman ujian atau membuka aplikasi lain.</p>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                <label class="block text-sm text-gray-400 mb-2">Minta Token Buka Kunci ke Guru:</label>
+                <input type="text" id="unlock-token" placeholder="Masukkan Token" class="w-full bg-black border border-gray-600 rounded p-3 text-center text-2xl font-mono tracking-widest uppercase">
+                <button onclick="unlockExam()" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition">BUKA KUNCI</button>
+                <p id="error-msg" class="text-red-400 text-xs mt-2 opacity-0">Token Salah!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let config = {
+            formUrl: "",
+            startTime: null,
+            endTime: null,
+            token: "",
+            isExamStarted: false
+        };
+
+        const screens = ['setup-screen', 'login-screen', 'exam-screen'];
+
+        function showScreen(screenId) {
+            screens.forEach(s => {
+                document.getElementById(s).classList.toggle('hidden', s !== screenId);
+            });
+        }
+
+        function startApp() {
+            const url = document.getElementById('config-url').value;
+            const start = document.getElementById('config-start').value;
+            const end = document.getElementById('config-end').value;
+            const token = document.getElementById('config-token').value;
+
+            if (!url || !start || !end || !token) {
+                alert("Harap lengkapi semua konfigurasi!");
+                return;
+            }
+
+            config.formUrl = url;
+            config.startTime = new Date(start);
+            config.endTime = new Date(end);
+            config.token = token.toUpperCase();
+
+            showScreen('login-screen');
+            startGlobalTimer();
+        }
+
+        function startGlobalTimer() {
+            setInterval(() => {
+                const now = new Date();
+                const timerEl = document.getElementById('timer-status');
+                const btnEnter = document.getElementById('btn-enter');
+                const countdownEl = document.getElementById('countdown');
+
+                if (now < config.startTime) {
+                    timerEl.innerText = "Ujian Belum Dimulai";
+                    timerEl.className = "mb-4 text-sm font-bold p-2 rounded-full bg-yellow-100 text-yellow-800 uppercase";
+                    btnEnter.disabled = true;
+                } else if (now > config.endTime) {
+                    timerEl.innerText = "Ujian Sudah Berakhir";
+                    timerEl.className = "mb-4 text-sm font-bold p-2 rounded-full bg-red-100 text-red-800 uppercase";
+                    btnEnter.disabled = true;
+                    if (config.isExamStarted) finishExam();
+                } else {
+                    timerEl.innerText = "Ujian Sedang Berlangsung";
+                    timerEl.className = "mb-4 text-sm font-bold p-2 rounded-full bg-green-100 text-green-800 uppercase";
+                    btnEnter.disabled = false;
+
+                    // Update Countdown in Header
+                    const diff = config.endTime - now;
+                    const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                    const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                    const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                    countdownEl.innerText = `${h}:${m}:${s}`;
+                }
+            }, 1000);
+        }
+
+        function enterExam() {
+            const name = document.getElementById('student-name').value;
+            if (!name) {
+                alert("Masukkan Nama Anda!");
+                return;
+            }
+
+            config.isExamStarted = true;
+            document.getElementById('display-student-name').innerText = name;
+            
+            // Inject Iframe
+            const container = document.getElementById('iframe-container');
+            container.innerHTML = `<iframe src="${config.formUrl}" id="exam-iframe"></iframe>`;
+            
+            showScreen('exam-screen');
+            
+            // Request Fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        function finishExam() {
+            config.isExamStarted = false;
+            alert("Waktu Ujian Telah Selesai.");
+            location.reload();
+        }
+
+        // --- ANTI CHEAT LOGIC ---
+        
+        window.addEventListener('blur', () => {
+            if (config.isExamStarted) {
+                lockScreen();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && config.isExamStarted) {
+                lockScreen();
+            }
+        });
+
+        function lockScreen() {
+            document.getElementById('locked-overlay').style.display = 'flex';
+            document.getElementById('unlock-token').value = "";
+            document.getElementById('error-msg').classList.add('opacity-0');
+        }
+
+        function unlockExam() {
+            const input = document.getElementById('unlock-token').value.toUpperCase();
+            const lockContent = document.getElementById('lock-content');
+
+            if (input === config.token) {
+                document.getElementById('locked-overlay').style.display = 'none';
+            } else {
+                lockContent.classList.add('shaking');
+                document.getElementById('error-msg').classList.remove('opacity-0');
+                setTimeout(() => lockContent.classList.remove('shaking'), 500);
+            }
+        }
+
+        // Prevent Right Click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Handle Escape/Exit Fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && config.isExamStarted) {
+                lockScreen();
+            }
+        });
+
+    </script>
+</body>
+</html>
