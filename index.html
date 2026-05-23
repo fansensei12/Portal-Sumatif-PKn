@@ -3,284 +3,1148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Tugas PKN - Noor Irfan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Portal Tugas PKN – Noor Irfan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); }
-        .file-drop-area.dragover { border-color: #3b82f6; background-color: #eff6ff; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:   #0d1f3c;
+            --navy2:  #162847;
+            --blue:   #2563eb;
+            --blue-lt:#3b82f6;
+            --gold:   #f0a500;
+            --cream:  #f8f5f0;
+            --white:  #ffffff;
+            --gray50: #f9fafb;
+            --gray100:#f3f4f6;
+            --gray200:#e5e7eb;
+            --gray400:#9ca3af;
+            --gray600:#4b5563;
+            --gray800:#1f2937;
+            --green:  #16a34a;
+            --red:    #dc2626;
+            --orange: #ea580c;
+            --radius: 16px;
+            --shadow: 0 20px 60px rgba(13,31,60,0.13);
         }
-        .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--gray800);
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 56px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 80% at 90% -10%, rgba(37,99,235,0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 50% at 10% 110%, rgba(240,165,0,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; right: 0;
+            height: 60px;
+            background: var(--cream);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .header-inner { position: relative; max-width: 640px; margin: 0 auto; text-align: center; }
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        .header-badge span { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem,5vw,3rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 12px; }
+        header h1 em { font-style: italic; color: var(--gold); }
+        header p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 420px; margin: 0 auto; }
+        .header-author { margin-top: 20px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+
+        /* ── MAIN ── */
+        main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 0 16px 64px; margin-top: -40px; }
+        .card { background: var(--white); border-radius: 24px; box-shadow: var(--shadow); width: 100%; max-width: 600px; overflow: hidden; animation: slideUp 0.5s ease-out both; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── TAB SWITCHER ── */
+        .tab-switcher { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--gray50); border-bottom: 1px solid var(--gray200); }
+        .tab-btn {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 16px 8px; font-size: 12px; font-weight: 600;
+            color: var(--gray400); cursor: pointer; border: none;
+            background: transparent; border-bottom: 3px solid transparent;
+            transition: all 0.2s; font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
+        }
+        .tab-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .tab-btn.active { color: var(--blue); background: var(--white); border-bottom-color: var(--blue); }
+        .tab-btn.active.photo-tab { color: var(--orange); border-bottom-color: var(--orange); }
+        .tab-btn:not(.active):hover { color: var(--gray600); background: var(--gray100); }
+
+        /* ── FORM PANEL ── */
+        .form-panel { padding: 36px 32px; display: none; }
+        .form-panel.active { display: block; }
+
+        .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray400); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-label::after { content:''; flex:1; height:1px; background: var(--gray200); }
+
+        .field-group { margin-bottom: 20px; }
+        .field-group label { display: block; font-size: 13px; font-weight: 600; color: var(--gray600); margin-bottom: 8px; }
+        .field-group label sup { color: var(--red); }
+
+        input[type="text"], input[type="number"], input[type="url"], select, textarea {
+            width: 100%; padding: 13px 16px; border: 1.5px solid var(--gray200);
+            border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif;
+            color: var(--gray800); background: var(--gray50); outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--blue-lt); box-shadow: 0 0 0 4px rgba(59,130,246,0.09); background: var(--white); }
+        select { cursor: pointer; }
+        textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+        .two-col { display: grid; grid-template-columns: 3fr 1.2fr; gap: 12px; }
+
+        /* ── DROP AREA ── */
+        .drop-area { border: 2px dashed var(--gray200); border-radius: var(--radius); padding: 36px 24px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .drop-area:hover, .drop-area.dragover { border-color: var(--blue-lt); background: rgba(59,130,246,0.04); }
+        .drop-area.photo-drop:hover, .drop-area.photo-drop.dragover { border-color: var(--orange); background: rgba(234,88,12,0.04); }
+        .drop-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+        .drop-icon.blue { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: var(--blue); }
+        .drop-icon.orange { background: linear-gradient(135deg,#fff7ed,#fed7aa); color: var(--orange); }
+        .drop-icon svg { width: 26px; height: 26px; }
+        .drop-area h4 { font-size: 14px; font-weight: 600; color: var(--gray800); margin-bottom: 4px; }
+        .drop-area p { font-size: 12px; color: var(--gray400); line-height: 1.6; }
+        .drop-area span.link { color: var(--blue); font-weight: 600; cursor: pointer; }
+        .drop-area span.link.orange { color: var(--orange); }
+
+        /* ── FILE PILL ── */
+        .file-pill { display: none; align-items: center; gap: 12px; background: linear-gradient(135deg,var(--navy),var(--navy2)); border-radius: 12px; padding: 14px 16px; color: var(--white); }
+        .file-pill.show { display: flex; }
+        .file-pill-icon { flex-shrink:0; width:36px; height:36px; background: rgba(255,255,255,0.12); border-radius:8px; display:flex; align-items:center; justify-content:center; }
+        .file-pill-icon svg { width:18px; height:18px; }
+        .file-pill-info { flex:1; overflow:hidden; }
+        .file-pill-info strong { display:block; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .file-pill-info span { font-size:11px; opacity:0.6; }
+        .file-pill-remove { background:rgba(255,255,255,0.1); border:none; color:white; cursor:pointer; border-radius:8px; padding:6px; display:flex; align-items:center; transition:background 0.2s; }
+        .file-pill-remove:hover { background:rgba(255,255,255,0.2); }
+        .file-pill-remove svg { width:16px; height:16px; }
+
+        /* ── PHOTO GRID ── */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+        .photo-thumb {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--gray100);
+            cursor: grab;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+        .photo-thumb:hover { border-color: var(--orange); box-shadow: 0 4px 16px rgba(234,88,12,0.2); }
+        .photo-thumb.dragging { opacity: 0.4; border-color: var(--orange); }
+        .photo-thumb.drag-over { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(234,88,12,0.25); }
+        .photo-thumb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .photo-thumb .thumb-num {
+            position: absolute; top: 6px; left: 6px;
+            background: rgba(13,31,60,0.75); color: #fff;
+            font-size: 10px; font-weight: 700; border-radius: 6px;
+            padding: 2px 7px; backdrop-filter: blur(4px);
+        }
+        .photo-thumb .thumb-del {
+            position: absolute; top: 6px; right: 6px;
+            background: rgba(220,38,38,0.85); color: white;
+            border: none; border-radius: 6px; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 13px; font-weight: 700;
+            opacity: 0; transition: opacity 0.15s;
+        }
+        .photo-thumb:hover .thumb-del { opacity: 1; }
+
+        .photo-add-btn {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            border: 2px dashed var(--gray200);
+            background: var(--gray50);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer; gap: 6px;
+            transition: all 0.2s; color: var(--gray400);
+            font-size: 12px; font-weight: 600;
+        }
+        .photo-add-btn:hover { border-color: var(--orange); color: var(--orange); background: rgba(234,88,12,0.04); }
+        .photo-add-btn svg { width: 22px; height: 22px; }
+
+        .photo-info-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 10px; padding: 10px 14px;
+            background: var(--gray50); border-radius: 10px;
+            font-size: 12px; color: var(--gray600);
+        }
+        .photo-info-bar strong { color: var(--orange); }
+        .btn-clear-photos { font-size: 11px; color: var(--red); font-weight: 600; background: none; border: none; cursor: pointer; }
+        .btn-clear-photos:hover { text-decoration: underline; }
+
+        .pdf-convert-preview {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1.5px solid #fed7aa;
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--orange);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pdf-convert-preview svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .drag-hint { font-size: 11px; color: var(--gray400); text-align: center; margin-top: 8px; }
+
+        /* ── LINK HINT ── */
+        .link-hint { font-size: 12px; color: var(--gray400); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+        .link-hint svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+        /* ── SUBMIT BUTTON ── */
+        .btn-submit {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+            color: var(--white); font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 700; border: none;
+            border-radius: var(--radius); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 8px; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 24px rgba(37,99,235,0.3); letter-spacing: 0.02em;
+        }
+        .btn-submit.orange-btn { background: linear-gradient(135deg, #9a3412 0%, var(--orange) 100%); box-shadow: 0 8px 24px rgba(234,88,12,0.3); }
+        .btn-submit svg { width: 18px; height: 18px; transition: transform 0.2s; }
+        .btn-submit:hover { transform: translateY(-2px); }
+        .btn-submit:hover svg { transform: translateX(3px); }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* ── LOADING ── */
+        .loading-panel { display: none; padding: 40px 32px; text-align: center; }
+        .loading-panel.show { display: block; }
+        .spinner-wrap { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#eff6ff,#dbeafe); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .spinner { width: 30px; height: 30px; border: 3px solid var(--gray200); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.9s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-panel h3 { font-size: 16px; font-weight: 700; color: var(--gray800); margin-bottom: 6px; }
+        .loading-panel p { font-size: 13px; color: var(--gray400); margin-bottom: 20px; }
+        .progress-track { height: 6px; background: var(--gray100); border-radius: 100px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--blue-lt)); border-radius: 100px; transition: width 0.5s ease; }
+
+        /* ── SUCCESS / ERROR ── */
+        .result-panel { display: none; padding: 48px 32px; text-align: center; animation: slideUp 0.4s ease-out; }
+        .result-panel.show { display: block; }
+        .result-icon { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .result-icon svg { width: 34px; height: 34px; }
+        .result-icon.success { background: linear-gradient(135deg,#dcfce7,#bbf7d0); color: var(--green); }
+        .result-icon.error   { background: linear-gradient(135deg,#fee2e2,#fecaca); color: var(--red); }
+        .result-panel h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .result-panel p { font-size: 14px; color: var(--gray600); line-height: 1.6; max-width: 340px; margin: 0 auto; }
+        .btn-retry { margin-top: 28px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-retry.success { background: var(--navy); color: var(--white); }
+        .btn-retry.success:hover { background: var(--blue); }
+        .btn-retry.error   { background: var(--gray100); color: var(--gray800); border: 1.5px solid var(--gray200); }
+        .btn-retry.error:hover { background: var(--gray200); }
+
+        /* ── FOOTER ── */
+        footer { border-top: 1px solid var(--gray200); padding: 24px; text-align: center; font-size: 12px; color: var(--gray400); }
+        footer strong { color: var(--gray600); }
+
+        /* ── COMPRESS BOX ── */
+        .compress-box {
+            margin-top: 14px;
+            border: 1.5px solid #fed7aa;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fff7ed;
+        }
+        .compress-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: default;
+        }
+        .compress-icon {
+            width: 34px; height: 34px;
+            background: rgba(234,88,12,0.12);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--orange); flex-shrink: 0;
+        }
+        .compress-icon svg { width: 17px; height: 17px; }
+        .compress-header > div strong { display: block; font-size: 13px; font-weight: 700; color: var(--gray800); }
+        .compress-header > div span   { font-size: 11px; color: var(--gray400); }
+        .compress-header { flex: 1; }
+        .compress-header > div:nth-child(2) { flex: 1; }
+
+        /* toggle switch */
+        .toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; cursor: pointer; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-knob {
+            position: absolute; inset: 0;
+            background: var(--gray200); border-radius: 100px;
+            transition: background 0.2s;
+        }
+        .toggle-knob::after {
+            content: ''; position: absolute;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: white; top: 3px; left: 3px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked + .toggle-knob { background: var(--orange); }
+        .toggle-switch input:checked + .toggle-knob::after { transform: translateX(18px); }
+
+        #compressControls { padding: 0 16px 16px; }
+
+        .size-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .chip {
+            padding: 7px 16px;
+            border-radius: 100px;
+            border: 1.5px solid var(--gray200);
+            background: var(--white);
+            font-size: 12px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--gray600); cursor: pointer;
+            transition: all 0.15s;
+        }
+        .chip:hover { border-color: var(--orange); color: var(--orange); }
+        .chip.active { background: var(--orange); border-color: var(--orange); color: white; }
+        .chip.custom-chip { border-style: dashed; }
+        .chip.custom-chip.active { background: var(--navy); border-color: var(--navy); }
+
+        .custom-size-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 12px;
+            animation: slideUp 0.2s ease-out;
+        }
+        .custom-size-row input { width: 120px !important; padding: 9px 12px !important; }
+        .custom-size-row span { font-size: 13px; color: var(--gray600); font-weight: 500; }
+
+        .compress-status {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: var(--green);
+            background: rgba(22,163,74,0.08);
+            border-radius: 8px; padding: 8px 12px;
+        }
+        .compress-status.off { color: var(--gray400); background: var(--gray100); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 540px) {
+            .form-panel { padding: 28px 20px; }
+            .two-col { grid-template-columns: 1fr 1fr; }
+            header { padding: 44px 20px 72px; }
+            .tab-btn { font-size: 11px; padding: 14px 4px; gap: 4px; }
+            .photo-grid { grid-template-columns: repeat(3, 1fr); }
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col">
+<body>
 
-    <header class="gradient-bg text-white py-10 px-4 shadow-xl">
-        <div class="max-w-3xl mx-auto text-center">
-            <div class="inline-block p-4 bg-white/20 rounded-2xl mb-4 backdrop-blur-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <h1 class="text-4xl font-extrabold tracking-tight mb-2">Upload Tugas PKN</h1>
-            <p class="text-sm font-bold mt-1 tracking-[0.3em] uppercase opacity-90 text-blue-200">By NOOR IRFAN</p>
-            <p class="mt-4 text-blue-100/80 max-w-md mx-auto">Sistem pengumpulan tugas digital mandiri. Pastikan data yang diisi sudah benar.</p>
+<header>
+    <div class="header-inner">
+        <div class="header-badge"><span></span>Portal Pengumpulan Tugas</div>
+        <h1>Upload Tugas <em>PKN</em></h1>
+        <p>Sistem pengumpulan tugas digital mandiri. Pastikan seluruh data yang diisi sudah benar sebelum mengirim.</p>
+        <p class="header-author">by Noor Irfan &nbsp;•&nbsp; Pendidikan Kewarganegaraan</p>
+    </div>
+</header>
+
+<main>
+  <div class="card">
+
+    <!-- TAB SWITCHER -->
+    <div class="tab-switcher">
+      <button class="tab-btn active" id="tabFile" onclick="switchTab('file')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Upload File
+      </button>
+      <button class="tab-btn photo-tab" id="tabPhoto" onclick="switchTab('photo')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Foto → PDF
+      </button>
+      <button class="tab-btn" id="tabLink" onclick="switchTab('link')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+        Kirim Link
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-panel" id="loadingPanel">
+        <div class="spinner-wrap"><div class="spinner"></div></div>
+        <h3 id="statusText">Menyiapkan pengiriman...</h3>
+        <p>Jangan tutup atau refresh halaman ini</p>
+        <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="result-panel" id="successPanel">
+        <div class="result-icon success">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
         </div>
-    </header>
+        <h3>Tugas Berhasil Terkirim!</h3>
+        <p>Data Anda telah tersimpan di database. Terima kasih telah mengumpulkan tugas tepat waktu.</p>
+        <button class="btn-retry success" onclick="resetAll()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Kirim Tugas Lain
+        </button>
+    </div>
 
-    <main class="flex-grow flex items-center justify-center p-4 -mt-10">
-        <div class="glass-card w-full max-w-xl rounded-3xl shadow-2xl p-6 md:p-10 mb-12 animate-slide-up">
-            <form id="uploadForm" class="space-y-6">
-                <!-- Nama Lengkap & No Absen -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="md:col-span-3">
-                        <label for="fullName" class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap</label>
-                        <input type="text" id="fullName" name="fullName" required
-                            placeholder="Nama sesuai absen"
-                            class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none bg-gray-50/50">
-                    </div>
-                    <div class="md:col-span-1">
-                        <label for="absentNumber" class="block text-sm font-bold text-gray-700 mb-2">No. Absen</label>
-                        <input type="number" id="absentNumber" name="absentNumber" required min="1" max="50"
-                            placeholder="00"
-                            class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none bg-gray-50/50">
-                    </div>
-                </div>
+    <!-- ERROR -->
+    <div class="result-panel" id="errorPanel">
+        <div class="result-icon error">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        </div>
+        <h3>Pengiriman Gagal</h3>
+        <p id="errorDetail">Terjadi kesalahan. Silakan coba lagi.</p>
+        <button class="btn-retry error" onclick="resetAll()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Coba Lagi
+        </button>
+    </div>
 
-                <div>
-                    <label for="classSelect" class="block text-sm font-bold text-gray-700 mb-2">Kelas</label>
-                    <select id="classSelect" name="classSelect" required
-                        class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none bg-white cursor-pointer">
-                        <option value="" disabled selected>Pilih Kelas Anda</option>
-                        <optgroup label="Kelas 7">
-                            <option value="7C">7C</option><option value="7D">7D</option><option value="7E">7E</option>
-                            <option value="7F">7F</option><option value="7G">7G</option>
-                        </optgroup>
-                        <optgroup label="Kelas 8">
-                            <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option>
-                            <option value="8D">8D</option><option value="8E">8E</option><option value="8F">8F</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <!-- Judul Tugas -->
-                <div>
-                    <label for="taskTitle" class="block text-sm font-bold text-gray-700 mb-2">Judul Tugas</label>
-                    <input type="text" id="taskTitle" name="taskTitle" required
-                        placeholder="Contoh: Tugas Mandiri Bab 3"
-                        class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none bg-gray-50/50">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">File Tugas</label>
-                    <div id="dropArea" class="file-drop-area border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all">
-                        <input type="file" id="fileInput" name="file" class="hidden" required>
-                        <div id="filePreview" class="space-y-4">
-                            <div class="mx-auto h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                            </div>
-                            <div class="text-gray-600">
-                                <span class="font-bold text-blue-600 hover:underline">Klik untuk pilih file</span><br>
-                                <span class="text-sm">atau tarik file ke sini</span>
-                            </div>
-                            <p class="text-xs text-gray-400 font-medium">Format: PDF, Word, Gambar (Maks. 10MB)</p>
-                        </div>
-                        <div id="fileSelected" class="hidden text-left bg-blue-600 p-4 rounded-xl flex items-center justify-between text-white">
-                            <div class="flex items-center space-x-3 truncate">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <div class="truncate">
-                                    <p id="fileNameDisplay" class="text-sm font-bold truncate max-w-[150px]">file.pdf</p>
-                                    <p id="fileSizeDisplay" class="text-xs opacity-80">0 MB</p>
-                                </div>
-                            </div>
-                            <button type="button" id="removeFile" class="hover:bg-white/20 p-1 rounded-lg transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" id="submitBtn" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-[0.98] flex items-center justify-center space-x-3 group">
-                    <span>Kirim Sekarang</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                    </svg>
-                </button>
-            </form>
-
-            <div id="loadingOverlay" class="hidden mt-8 text-center space-y-4">
-                <div class="inline-flex items-center justify-center p-3 bg-blue-50 rounded-full">
-                    <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-100 border-t-blue-600"></div>
-                </div>
-                <div>
-                    <p id="statusText" class="text-gray-700 font-bold">Menyiapkan pengiriman...</p>
-                    <p class="text-xs text-gray-400 mt-1">Jangan tutup halaman ini</p>
-                </div>
-                <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                    <div id="progressBar" class="bg-blue-600 h-full w-0 transition-all duration-500 rounded-full"></div>
-                </div>
+    <!-- ─── PANEL: UPLOAD FILE ─── -->
+    <div class="form-panel active" id="panelFile">
+        <div class="section-label">Identitas Siswa</div>
+        <div class="two-col">
+            <div class="field-group">
+                <label for="fullName">Nama Lengkap <sup>*</sup></label>
+                <input type="text" id="fullName" placeholder="Nama sesuai absen" required>
             </div>
-
-            <div id="successMessage" class="hidden mt-8 p-8 bg-green-50 border border-green-100 rounded-3xl text-center animate-slide-up">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-500 text-white mb-4 shadow-lg shadow-green-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h3 class="text-2xl font-black text-green-900">Tugas Berhasil!</h3>
-                <p class="text-green-700 mt-2 font-medium">Data telah tersimpan di sistem kami.</p>
-                <button onclick="window.location.reload()" class="mt-8 bg-white border border-green-200 text-green-700 px-6 py-2.5 rounded-xl font-bold hover:bg-green-100 transition-colors">Kirim Baru</button>
-            </div>
-            
-            <div id="errorMessage" class="hidden mt-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-center">
-                <p class="text-red-700 font-bold text-sm" id="errorText">Gagal Terkirim.</p>
-                <button onclick="window.location.reload()" class="mt-2 text-red-900 text-xs font-black uppercase tracking-widest">Ulangi</button>
+            <div class="field-group">
+                <label for="absentNumber">No. Absen <sup>*</sup></label>
+                <input type="number" id="absentNumber" placeholder="00" min="1" max="50" required>
             </div>
         </div>
-    </main>
-
-    <footer class="bg-white/50 py-8 px-4 border-t border-gray-100 mt-auto">
-        <div class="max-w-3xl mx-auto text-center">
-            <p class="text-gray-400 text-sm font-medium">&copy; 2024 Portal PKN Noor Irfan. Dibuat dengan dedikasi.</p>
+        <div class="field-group">
+            <label for="classSelect">Kelas <sup>*</sup></label>
+            <select id="classSelect" required>
+                <option value="" disabled selected>Pilih Kelas Anda</option>
+                <optgroup label="── Kelas 7 ──">
+                    <option value="7C">7C</option><option value="7D">7D</option>
+                    <option value="7E">7E</option><option value="7F">7F</option><option value="7G">7G</option>
+                </optgroup>
+                <optgroup label="── Kelas 8 ──">
+                    <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option>
+                    <option value="8D">8D</option><option value="8E">8E</option><option value="8F">8F</option>
+                </optgroup>
+            </select>
         </div>
-    </footer>
+        <div class="section-label">Detail Tugas</div>
+        <div class="field-group">
+            <label for="taskTitle">Judul Tugas <sup>*</sup></label>
+            <input type="text" id="taskTitle" placeholder="Contoh: Tugas Mandiri Bab 3 – Bela Negara" required>
+        </div>
+        <div class="field-group">
+            <label>File Tugas <sup>*</sup></label>
+            <div class="drop-area" id="dropArea">
+                <input type="file" id="fileInput" style="display:none" required>
+                <div id="filePreview">
+                    <div class="drop-icon blue">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    </div>
+                    <h4><span class="link">Klik untuk pilih file</span> atau seret ke sini</h4>
+                    <p>PDF, Word, Gambar &nbsp;·&nbsp; Maks. 10MB</p>
+                </div>
+                <div class="file-pill" id="filePill">
+                    <div class="file-pill-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div class="file-pill-info">
+                        <strong id="fileNameDisplay">file.pdf</strong>
+                        <span id="fileSizeDisplay">0 MB</span>
+                    </div>
+                    <button type="button" class="file-pill-remove" id="removeFile">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="field-group">
+            <label for="notesFile">Catatan / Keterangan</label>
+            <textarea id="notesFile" placeholder="Tuliskan keterangan tambahan jika ada, misal: revisi, tugas susulan, dll."></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitForm('file')">
+            <span>Kirim Tugas</span>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        </button>
+    </div>
 
-    <script>
-        
-        // ⚠️ PENTING: Ganti link di bawah ini dengan URL Web App (akhiran /exec)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwhezv8JbyAyZbMvABKjmgwSstIDEVlv5JXv54gMqjOWcTWSCTs099OK7ShFNADrI2y/exec';
+    <!-- ─── PANEL: FOTO → PDF ─── -->
+    <div class="form-panel" id="panelPhoto">
+        <div class="section-label">Identitas Siswa</div>
+        <div class="two-col">
+            <div class="field-group">
+                <label for="fullNameP">Nama Lengkap <sup>*</sup></label>
+                <input type="text" id="fullNameP" placeholder="Nama sesuai absen" required>
+            </div>
+            <div class="field-group">
+                <label for="absentNumberP">No. Absen <sup>*</sup></label>
+                <input type="number" id="absentNumberP" placeholder="00" min="1" max="50" required>
+            </div>
+        </div>
+        <div class="field-group">
+            <label for="classSelectP">Kelas <sup>*</sup></label>
+            <select id="classSelectP" required>
+                <option value="" disabled selected>Pilih Kelas Anda</option>
+                <optgroup label="── Kelas 7 ──">
+                    <option value="7C">7C</option><option value="7D">7D</option>
+                    <option value="7E">7E</option><option value="7F">7F</option><option value="7G">7G</option>
+                </optgroup>
+                <optgroup label="── Kelas 8 ──">
+                    <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option>
+                    <option value="8D">8D</option><option value="8E">8E</option><option value="8F">8F</option>
+                </optgroup>
+            </select>
+        </div>
 
-        const form = document.getElementById('uploadForm');
-        const fileInput = document.getElementById('fileInput');
-        const dropArea = document.getElementById('dropArea');
-        const filePreview = document.getElementById('filePreview');
-        const fileSelected = document.getElementById('fileSelected');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
-        const removeFileBtn = document.getElementById('removeFile');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const successMessage = document.getElementById('successMessage');
-        const progressBar = document.getElementById('progressBar');
-        const statusText = document.getElementById('statusText');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
+        <div class="section-label">Foto Tugas</div>
 
-        dropArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFiles);
+        <!-- Photo drop zone -->
+        <div class="drop-area photo-drop" id="photoDropArea">
+            <input type="file" id="photoInput" style="display:none" accept="image/*" multiple>
+            <div class="drop-icon orange">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h4><span class="link orange">Klik untuk pilih foto</span> atau seret ke sini</h4>
+            <p>JPG, PNG, HEIC &nbsp;·&nbsp; Bisa pilih banyak foto sekaligus</p>
+        </div>
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
-        });
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
-        });
-        dropArea.addEventListener('drop', (e) => {
-            fileInput.files = e.dataTransfer.files;
-            handleFiles();
-        });
+        <!-- Thumbnail grid -->
+        <div id="photoGridWrap" style="display:none">
+            <div class="photo-info-bar">
+                <span><strong id="photoCount">0</strong> foto dipilih &nbsp;→&nbsp; akan digabung menjadi 1 PDF</span>
+                <button class="btn-clear-photos" onclick="clearPhotos()">Hapus Semua</button>
+            </div>
+            <div class="photo-grid" id="photoGrid"></div>
+            <p class="drag-hint">💡 Seret thumbnail untuk mengubah urutan halaman PDF</p>
 
-        function handleFiles() {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (file.size > 10 * 1024 * 1024) {
-                    alert("Ukuran file terlalu besar! Maksimal 10MB.");
-                    fileInput.value = '';
-                    return;
-                }
-                fileNameDisplay.textContent = file.name;
-                fileSizeDisplay.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-                filePreview.classList.add('hidden');
-                fileSelected.classList.remove('hidden');
-            }
+            <!-- COMPRESS CONTROL -->
+            <div class="compress-box">
+                <div class="compress-header">
+                    <div class="compress-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 8l-3-3m3 3l3-3"/></svg>
+                    </div>
+                    <div>
+                        <strong>Kompresi Foto</strong>
+                        <span>Target ukuran per foto sebelum digabung ke PDF</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="compressToggle" checked onchange="onCompressToggle()">
+                        <span class="toggle-knob"></span>
+                    </label>
+                </div>
+                <div id="compressControls">
+                    <div class="size-chips">
+                        <button class="chip" data-kb="300"  onclick="selectChip(this,300)">300 KB</button>
+                        <button class="chip active" data-kb="700" onclick="selectChip(this,700)">700 KB</button>
+                        <button class="chip" data-kb="1024" onclick="selectChip(this,1024)">1 MB</button>
+                        <button class="chip" data-kb="2048" onclick="selectChip(this,2048)">2 MB</button>
+                        <button class="chip custom-chip" onclick="focusCustom()">Kustom</button>
+                    </div>
+                    <div class="custom-size-row" id="customSizeRow" style="display:none">
+                        <input type="number" id="customKb" min="100" max="9999" placeholder="mis. 500"
+                               oninput="onCustomKb()" style="width:120px">
+                        <span>KB per foto</span>
+                    </div>
+                    <div class="compress-status" id="compressStatus">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Target: <strong id="compressTargetLabel">≤ 700 KB</strong> per foto &nbsp;·&nbsp; Kualitas akan disesuaikan otomatis
+                    </div>
+                </div>
+            </div>
+
+            <div class="pdf-convert-preview">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Foto akan otomatis dikonversi menjadi PDF sebelum dikirim</span>
+            </div>
+        </div>
+
+        <div class="field-group" style="margin-top:20px">
+            <label for="taskTitleP">Judul Tugas <sup>*</sup></label>
+            <input type="text" id="taskTitleP" placeholder="Contoh: Tugas Mandiri Bab 3 – Bela Negara" required>
+        </div>
+        <div class="field-group">
+            <label for="notesPhoto">Catatan / Keterangan</label>
+            <textarea id="notesPhoto" placeholder="Tuliskan keterangan tambahan jika ada, misal: revisi, tugas susulan, dll."></textarea>
+        </div>
+        <button class="btn-submit orange-btn" onclick="submitForm('photo')">
+            <span>Konversi &amp; Kirim PDF</span>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        </button>
+    </div>
+
+    <!-- ─── PANEL: KIRIM LINK ─── -->
+    <div class="form-panel" id="panelLink">
+        <div class="section-label">Identitas Siswa</div>
+        <div class="two-col">
+            <div class="field-group">
+                <label for="fullNameL">Nama Lengkap <sup>*</sup></label>
+                <input type="text" id="fullNameL" placeholder="Nama sesuai absen" required>
+            </div>
+            <div class="field-group">
+                <label for="absentNumberL">No. Absen <sup>*</sup></label>
+                <input type="number" id="absentNumberL" placeholder="00" min="1" max="50" required>
+            </div>
+        </div>
+        <div class="field-group">
+            <label for="classSelectL">Kelas <sup>*</sup></label>
+            <select id="classSelectL" required>
+                <option value="" disabled selected>Pilih Kelas Anda</option>
+                <optgroup label="── Kelas 7 ──">
+                    <option value="7C">7C</option><option value="7D">7D</option>
+                    <option value="7E">7E</option><option value="7F">7F</option><option value="7G">7G</option>
+                </optgroup>
+                <optgroup label="── Kelas 8 ──">
+                    <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option>
+                    <option value="8D">8D</option><option value="8E">8E</option><option value="8F">8F</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="section-label">Detail Tugas</div>
+        <div class="field-group">
+            <label for="taskTitleL">Judul Tugas <sup>*</sup></label>
+            <input type="text" id="taskTitleL" placeholder="Contoh: Tugas Mandiri Bab 3 – Bela Negara" required>
+        </div>
+        <div class="field-group">
+            <label for="taskLink">Link Tugas <sup>*</sup></label>
+            <input type="url" id="taskLink" placeholder="https://drive.google.com/..." required>
+            <p class="link-hint">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z"/></svg>
+                Pastikan link sudah diatur agar bisa diakses siapapun (anyone with the link)
+            </p>
+        </div>
+        <div class="field-group">
+            <label for="notesLink">Catatan / Keterangan</label>
+            <textarea id="notesLink" placeholder="Tuliskan keterangan tambahan jika ada, misal: revisi, tugas susulan, dll."></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitForm('link')">
+            <span>Kirim Link</span>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        </button>
+    </div>
+
+  </div><!-- /card -->
+</main>
+
+<footer>
+    <p>&copy; 2024 &nbsp;<strong>Portal PKN – Noor Irfan</strong>&nbsp; · Dibuat dengan dedikasi untuk kemudahan belajar</p>
+</footer>
+
+<script>
+// ⚠️ Ganti URL di bawah dengan URL Google Apps Script Anda
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhezv8JbyAyZbMvABKjmgwSstIDEVlv5JXv54gMqjOWcTWSCTs099OK7ShFNADrI2y/exec';
+
+// ═══════════════════════════════════════════
+// TAB LOGIC
+// ═══════════════════════════════════════════
+let currentTab = 'file';
+function switchTab(tab) {
+    currentTab = tab;
+    ['file','photo','link'].forEach(t => {
+        document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.toggle('active', t === tab);
+        const p = document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (p) p.classList.toggle('active', t === tab);
+    });
+}
+
+// ═══════════════════════════════════════════
+// FILE UPLOAD (tab 1)
+// ═══════════════════════════════════════════
+const dropArea      = document.getElementById('dropArea');
+const fileInput     = document.getElementById('fileInput');
+const filePreview   = document.getElementById('filePreview');
+const filePill      = document.getElementById('filePill');
+const fileNameDisp  = document.getElementById('fileNameDisplay');
+const fileSizeDisp  = document.getElementById('fileSizeDisplay');
+const removeFileBtn = document.getElementById('removeFile');
+
+dropArea.addEventListener('click', e => { if (!e.target.closest('#filePill')) fileInput.click(); });
+fileInput.addEventListener('change', handleFile);
+
+['dragenter','dragover','dragleave','drop'].forEach(ev => dropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+['dragenter','dragover'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.add('dragover')));
+['dragleave','drop'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.remove('dragover')));
+dropArea.addEventListener('drop', e => { fileInput.files = e.dataTransfer.files; handleFile(); });
+
+function handleFile() {
+    const file = fileInput.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { alert('Ukuran file terlalu besar. Maksimal 10MB.'); fileInput.value = ''; return; }
+    fileNameDisp.textContent = file.name;
+    fileSizeDisp.textContent = (file.size / 1048576).toFixed(2) + ' MB';
+    filePreview.style.display = 'none';
+    filePill.classList.add('show');
+}
+removeFileBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    fileInput.value = '';
+    filePreview.style.display = '';
+    filePill.classList.remove('show');
+});
+
+// ═══════════════════════════════════════════
+// PHOTO → PDF (tab 2)
+// ═══════════════════════════════════════════
+const photoDropArea  = document.getElementById('photoDropArea');
+const photoInput     = document.getElementById('photoInput');
+const photoGrid      = document.getElementById('photoGrid');
+const photoGridWrap  = document.getElementById('photoGridWrap');
+const photoCountEl   = document.getElementById('photoCount');
+
+let photoFiles = []; // ordered array of {file, dataURL}
+
+photoDropArea.addEventListener('click', () => photoInput.click());
+photoInput.addEventListener('change', () => addPhotos(Array.from(photoInput.files)));
+
+['dragenter','dragover','dragleave','drop'].forEach(ev => photoDropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+['dragenter','dragover'].forEach(ev => photoDropArea.addEventListener(ev, () => photoDropArea.classList.add('dragover')));
+['dragleave','drop'].forEach(ev => photoDropArea.addEventListener(ev, () => photoDropArea.classList.remove('dragover')));
+photoDropArea.addEventListener('drop', e => addPhotos(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))));
+
+async function addPhotos(files) {
+    for (const file of files) {
+        const dataURL = await fileToDataURL(file);
+        photoFiles.push({ file, dataURL });
+    }
+    photoInput.value = '';
+    renderPhotoGrid();
+}
+
+function fileToDataURL(file) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+    });
+}
+
+function renderPhotoGrid() {
+    photoGrid.innerHTML = '';
+    photoFiles.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'photo-thumb';
+        div.draggable = true;
+        div.dataset.idx = idx;
+        div.innerHTML = `
+            <img src="${item.dataURL}" alt="foto ${idx+1}">
+            <span class="thumb-num">${idx + 1}</span>
+            <button class="thumb-del" onclick="removePhoto(${idx})" title="Hapus">✕</button>
+        `;
+        // drag-to-reorder
+        div.addEventListener('dragstart', onDragStart);
+        div.addEventListener('dragover',  onDragOver);
+        div.addEventListener('drop',      onDrop);
+        div.addEventListener('dragend',   onDragEnd);
+        photoGrid.appendChild(div);
+    });
+
+    // add-more button
+    const addBtn = document.createElement('div');
+    addBtn.className = 'photo-add-btn';
+    addBtn.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg><span>Tambah</span>`;
+    addBtn.onclick = () => photoInput.click();
+    photoGrid.appendChild(addBtn);
+
+    photoCountEl.textContent = photoFiles.length;
+    photoGridWrap.style.display = photoFiles.length ? 'block' : 'none';
+    photoDropArea.style.display = photoFiles.length ? 'none' : '';
+}
+
+function removePhoto(idx) {
+    photoFiles.splice(idx, 1);
+    renderPhotoGrid();
+    if (photoFiles.length === 0) photoDropArea.style.display = '';
+}
+
+function clearPhotos() {
+    photoFiles = [];
+    renderPhotoGrid();
+    photoDropArea.style.display = '';
+}
+
+// Drag-to-reorder
+let dragSrc = null;
+function onDragStart(e) { dragSrc = +this.dataset.idx; this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function onDragOver(e)  { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; document.querySelectorAll('.photo-thumb').forEach(el => el.classList.remove('drag-over')); this.classList.add('drag-over'); }
+function onDrop(e)      { e.preventDefault(); const dest = +this.dataset.idx; if (dragSrc === dest) return; const moved = photoFiles.splice(dragSrc, 1)[0]; photoFiles.splice(dest, 0, moved); renderPhotoGrid(); }
+function onDragEnd()    { document.querySelectorAll('.photo-thumb').forEach(el => el.classList.remove('dragging','drag-over')); }
+
+// ═══════════════════════════════════════════
+// COMPRESSION CONTROLS
+// ═══════════════════════════════════════════
+let compressTargetKb = 700; // default
+let compressEnabled  = true;
+let customChipActive = false;
+
+function onCompressToggle() {
+    compressEnabled = document.getElementById('compressToggle').checked;
+    const ctrl = document.getElementById('compressControls');
+    const stat = document.getElementById('compressStatus');
+    ctrl.style.opacity  = compressEnabled ? '1' : '0.4';
+    ctrl.style.pointerEvents = compressEnabled ? '' : 'none';
+    stat.className = 'compress-status' + (compressEnabled ? '' : ' off');
+    stat.innerHTML = compressEnabled
+        ? `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Target: <strong>${compressTargetKb >= 1024 ? (compressTargetKb/1024).toFixed(0)+' MB' : compressTargetKb+' KB'}</strong> per foto &nbsp;·&nbsp; Kualitas akan disesuaikan otomatis`
+        : `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> Kompresi dimatikan — foto dikirim dengan kualitas asli`;
+}
+
+function selectChip(el, kb) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    customChipActive = el.classList.contains('custom-chip');
+    document.getElementById('customSizeRow').style.display = customChipActive ? 'flex' : 'none';
+    if (!customChipActive) {
+        compressTargetKb = kb;
+        updateCompressLabel();
+    }
+}
+
+function focusCustom() {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.custom-chip').classList.add('active');
+    customChipActive = true;
+    document.getElementById('customSizeRow').style.display = 'flex';
+    document.getElementById('customKb').focus();
+}
+
+function onCustomKb() {
+    const val = parseInt(document.getElementById('customKb').value);
+    if (val >= 50) { compressTargetKb = val; updateCompressLabel(); }
+}
+
+function updateCompressLabel() {
+    const label = compressTargetKb >= 1024 ? (compressTargetKb/1024).toFixed(1)+' MB' : compressTargetKb+' KB';
+    document.getElementById('compressTargetLabel').textContent = '≤ ' + label;
+    if (compressEnabled) onCompressToggle(); // refresh status bar
+}
+
+// Compress a single image dataURL to target KB using binary search on JPEG quality
+async function compressImageToTarget(dataURL, targetKb) {
+    const img = await loadImage(dataURL);
+    const canvas = document.createElement('canvas');
+    // Use original resolution but cap to reasonable max to avoid huge files
+    const MAX_DIM = 2480; // ~A4 at 300dpi
+    let w = img.width, h = img.height;
+    if (w > MAX_DIM || h > MAX_DIM) {
+        if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+        else       { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+    }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+    const targetBytes = targetKb * 1024;
+    let lo = 0.1, hi = 0.95, best = null;
+
+    for (let i = 0; i < 8; i++) {          // max 8 iterations binary search
+        const mid  = (lo + hi) / 2;
+        const data = canvas.toDataURL('image/jpeg', mid);
+        const bytes = Math.round((data.length - 22) * 3 / 4); // approx decoded size
+        if (bytes <= targetBytes) { best = data; lo = mid; }
+        else                      { hi  = mid; }
+        if (hi - lo < 0.01) break;
+    }
+    // If even lowest quality still exceeds target, scale down resolution too
+    if (!best) {
+        const scale = Math.sqrt(targetBytes / (w * h * 3)); // rough pixel budget
+        const sw = Math.max(200, Math.round(w * scale));
+        const sh = Math.max(200, Math.round(h * scale));
+        canvas.width = sw; canvas.height = sh;
+        canvas.getContext('2d').drawImage(img, 0, 0, sw, sh);
+        best = canvas.toDataURL('image/jpeg', 0.7);
+    }
+    return best;
+}
+
+// ── CORE: Convert photos to PDF bytes using Canvas ──
+async function photosToPdfBase64(items, onProgress) {
+    // PDF page size: A4 in pts (595 x 842)
+    const A4W = 595, A4H = 842;
+    const margin = 20;
+
+    // Build PDF manually (pure JS, no library needed)
+    // We'll encode each image as JPEG inside a minimal PDF structure
+    const pages = [];
+    const imgObjs = [];
+
+    for (let i = 0; i < items.length; i++) {
+        if (onProgress) onProgress(i, items.length);
+
+        // Step 1: optionally compress the source image
+        let srcDataURL = items[i].dataURL;
+        if (compressEnabled) {
+            srcDataURL = await compressImageToTarget(srcDataURL, compressTargetKb);
         }
 
-        removeFileBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fileInput.value = '';
-            filePreview.classList.remove('hidden');
-            fileSelected.classList.add('hidden');
-        });
+        // Step 2: fit compressed image into A4 page dimensions
+        const img = await loadImage(srcDataURL);
+        const canvas = document.createElement('canvas');
+        const avW = A4W - margin * 2;
+        const avH = A4H - margin * 2;
+        let drawW = avW, drawH = (img.height / img.width) * avW;
+        if (drawH > avH) { drawH = avH; drawW = (img.width / img.height) * avH; }
 
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
+        canvas.width  = Math.round(drawW);
+        canvas.height = Math.round(drawH);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        const jpegDataURL = canvas.toDataURL('image/jpeg', compressEnabled ? 0.92 : 0.95);
+        const jpegBytes   = base64ToBytes(jpegDataURL.split(',')[1]);
+        imgObjs.push({ bytes: jpegBytes, w: Math.round(drawW), h: Math.round(drawH) });
+    }
 
-            if (scriptURL === 'PASTE_URL_WEB_APP_ANDA_DISINI') {
-                alert('Anda belum memasukkan URL Google Script!');
-                return;
-            }
+    return buildPdf(imgObjs, A4W, A4H, margin);
+}
 
-            const formData = {
-                fullName: document.getElementById('fullName').value,
-                absentNumber: document.getElementById('absentNumber').value,
-                kelas: document.getElementById('classSelect').value,
-                taskTitle: document.getElementById('taskTitle').value,
-                file: fileInput.files[0]
-            };
+function loadImage(src) {
+    return new Promise((res, rej) => {
+        const img = new Image();
+        img.onload  = () => res(img);
+        img.onerror = rej;
+        img.src = src;
+    });
+}
 
-            form.classList.add('hidden');
-            loadingOverlay.classList.remove('hidden');
-            
-            try {
-                statusText.textContent = "Mengolah dokumen...";
-                progressBar.style.width = "30%";
-                
-                const base64File = await toBase64(formData.file);
-                
-                statusText.textContent = "Sedang mengunggah...";
-                progressBar.style.width = "70%";
+function base64ToBytes(b64) {
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+}
 
-                const payload = {
-                    fullName: formData.fullName,
-                    absentNumber: formData.absentNumber,
-                    kelas: formData.kelas,
-                    taskTitle: formData.taskTitle,
-                    fileName: formData.file.name,
-                    fileData: base64File
-                };
+function bytesToBase64(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+}
 
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    mode: 'no-cors'
-                });
+// Minimal valid PDF builder (no external library)
+function buildPdf(imgObjs, pageW, pageH, margin) {
+    const enc = new TextEncoder();
+    const parts = [];
+    let pos = 0;
+    const offsets = [];
 
-                progressBar.style.width = "100%";
-                statusText.textContent = "Pengiriman Selesai!";
-                
-                setTimeout(() => {
-                    loadingOverlay.classList.add('hidden');
-                    successMessage.classList.remove('hidden');
-                }, 1000);
+    function w(s) { const b = typeof s === 'string' ? enc.encode(s) : s; parts.push(b); pos += b.length; }
+    function obj(n, s) { offsets[n] = pos; w(`${n} 0 obj\n${s}\nendobj\n`); }
 
-            } catch (err) {
-                loadingOverlay.classList.add('hidden');
-                errorMessage.classList.remove('hidden');
-                errorText.textContent = "Koneksi Bermasalah: " + err.message;
-                console.error(err);
-            }
-        });
-    </script>
+    // Header
+    w('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+
+    const nPages = imgObjs.length;
+    // Object layout: 1=catalog, 2=pages, 3..=(page,img) pairs -> 3+2*i=page, 4+2*i=img
+    const catalogObj = 1;
+    const pagesObj   = 2;
+    const firstPage  = 3; // pages at 3,5,7,... images at 4,6,8,...
+
+    const pageObjNums = imgObjs.map((_, i) => firstPage + i * 2);
+    const imgObjNums  = imgObjs.map((_, i) => firstPage + i * 2 + 1);
+
+    // Image objects (XObjects)
+    imgObjs.forEach((img, i) => {
+        obj(imgObjNums[i],
+            `<< /Type /XObject /Subtype /Image\n` +
+            `/Width ${img.w} /Height ${img.h}\n` +
+            `/ColorSpace /DeviceRGB /BitsPerComponent 8\n` +
+            `/Filter /DCTDecode\n` +
+            `/Length ${img.bytes.length}\n>>\nstream\n`
+        );
+        w(img.bytes);
+        w('\nendstream');
+    });
+
+    // Page objects
+    pageObjNums.forEach((pNum, i) => {
+        const img = imgObjs[i];
+        const imgN = imgObjNums[i];
+        // Center image on page
+        const x = (pageW - img.w) / 2;
+        const y = (pageH - img.h) / 2;
+        const stream =
+            `q\n${img.w} 0 0 ${img.h} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im${i} Do\nQ`;
+        const streamBytes = enc.encode(stream);
+
+        obj(pNum,
+            `<< /Type /Page /Parent ${pagesObj} 0 R\n` +
+            `/MediaBox [0 0 ${pageW} ${pageH}]\n` +
+            `/Resources << /XObject << /Im${i} ${imgN} 0 R >> >>\n` +
+            `/Contents ${pNum + 100} 0 R\n>>`
+        );
+        // content stream as separate object; use high obj nums to avoid collision
+        obj(pNum + 100,
+            `<< /Length ${streamBytes.length} >>\nstream\n` +
+            stream + `\nendstream`
+        );
+    });
+
+    // Pages dict
+    obj(pagesObj,
+        `<< /Type /Pages\n/Kids [${pageObjNums.map(n => n + ' 0 R').join(' ')}]\n/Count ${nPages} >>`
+    );
+
+    // Catalog
+    obj(catalogObj, `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`);
+
+    // xref
+    const xrefPos = pos;
+    const totalObjs = offsets.length; // sparse; find max
+    const maxObj = Math.max(...Object.keys(offsets).map(Number));
+    w(`xref\n0 ${maxObj + 1}\n`);
+    w(`0000000000 65535 f \n`);
+    for (let n = 1; n <= maxObj; n++) {
+        const off = offsets[n];
+        w(off !== undefined ? String(off).padStart(10,'0') + ' 00000 n \n' : '0000000000 65535 f \n');
+    }
+    w(`trailer\n<< /Size ${maxObj + 1} /Root ${catalogObj} 0 R >>\n`);
+    w(`startxref\n${xrefPos}\n%%EOF\n`);
+
+    // Concat all parts
+    const total = parts.reduce((s, b) => s + b.length, 0);
+    const out   = new Uint8Array(total);
+    let offset  = 0;
+    for (const b of parts) { out.set(b, offset); offset += b.length; }
+    return 'data:application/pdf;base64,' + bytesToBase64(out);
+}
+
+// ═══════════════════════════════════════════
+// PANEL / STATE HELPERS
+// ═══════════════════════════════════════════
+function showLoading(text) {
+    hideForms();
+    document.getElementById('loadingPanel').classList.add('show');
+    document.getElementById('statusText').textContent = text || 'Menyiapkan...';
+    setProgress(0);
+}
+function showSuccess() {
+    document.getElementById('loadingPanel').classList.remove('show');
+    document.getElementById('successPanel').classList.add('show');
+}
+function showError(msg) {
+    document.getElementById('loadingPanel').classList.remove('show');
+    document.getElementById('errorDetail').textContent = msg || 'Terjadi kesalahan. Silakan coba lagi.';
+    document.getElementById('errorPanel').classList.add('show');
+}
+function hideForms() {
+    ['panelFile','panelPhoto','panelLink'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.querySelector('.tab-switcher').style.display = 'none';
+}
+function setProgress(pct) { document.getElementById('progressBar').style.width = pct + '%'; }
+
+function resetAll() {
+    document.querySelector('.tab-switcher').style.display = '';
+    ['loadingPanel','successPanel','errorPanel'].forEach(id => document.getElementById(id).classList.remove('show'));
+    switchTab(currentTab);
+    fileInput.value = ''; filePreview.style.display = ''; filePill.classList.remove('show');
+    clearPhotos();
+}
+
+// ═══════════════════════════════════════════
+// VALIDATION
+// ═══════════════════════════════════════════
+function validate(fields) {
+    for (const [id, label] of fields) {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { alert(`Kolom "${label}" wajib diisi.`); el.focus(); return false; }
+    }
+    return true;
+}
+
+const toBase64 = file => new Promise((res,rej) => {
+    const r = new FileReader(); r.readAsDataURL(file);
+    r.onload = () => res(r.result); r.onerror = rej;
+});
+
+// ═══════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════
+async function submitForm(mode) {
+
+    if (mode === 'file') {
+        if (!validate([['fullName','Nama Lengkap'],['absentNumber','No. Absen'],['classSelect','Kelas'],['taskTitle','Judul Tugas']])) return;
+        if (!fileInput.files[0]) { alert('Pilih file tugas terlebih dahulu.'); return; }
+        showLoading('Mengolah dokumen...'); setProgress(25);
+        try {
+            const b64 = await toBase64(fileInput.files[0]);
+            document.getElementById('statusText').textContent = 'Mengunggah ke server...'; setProgress(65);
+            await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                mode:'file', fullName: v('fullName'), absentNumber: v('absentNumber'),
+                kelas: v('classSelect'), taskTitle: v('taskTitle'), notes: v('notesFile'),
+                fileName: fileInput.files[0].name, fileData: b64
+            })});
+            setProgress(100); document.getElementById('statusText').textContent = 'Selesai!';
+            setTimeout(showSuccess, 800);
+        } catch(e) { showError('Koneksi bermasalah: ' + e.message); }
+
+    } else if (mode === 'photo') {
+        if (!validate([['fullNameP','Nama Lengkap'],['absentNumberP','No. Absen'],['classSelectP','Kelas'],['taskTitleP','Judul Tugas']])) return;
+        if (photoFiles.length === 0) { alert('Pilih minimal 1 foto terlebih dahulu.'); return; }
+        showLoading('Mengonversi foto ke PDF...'); setProgress(15);
+        try {
+            document.getElementById('statusText').textContent = `Memproses ${photoFiles.length} foto...`;
+            setProgress(30);
+            const pdfDataURL = await photosToPdfBase64(photoFiles, (i, total) => {
+                const label = compressEnabled
+                    ? `Mengompresi foto ${i+1} dari ${total}...`
+                    : `Memproses foto ${i+1} dari ${total}...`;
+                document.getElementById('statusText').textContent = label;
+                setProgress(30 + Math.round((i / total) * 35));
+            });
+            document.getElementById('statusText').textContent = 'Mengunggah PDF...'; setProgress(70);
+            const name = (v('taskTitleP') || 'tugas').replace(/\s+/g,'_') + '_' + v('fullNameP').replace(/\s+/g,'_') + '.pdf';
+            await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                mode:'photo_pdf', fullName: v('fullNameP'), absentNumber: v('absentNumberP'),
+                kelas: v('classSelectP'), taskTitle: v('taskTitleP'), notes: v('notesPhoto'),
+                fileName: name, fileData: pdfDataURL
+            })});
+            setProgress(100); document.getElementById('statusText').textContent = 'Selesai!';
+            setTimeout(showSuccess, 800);
+        } catch(e) { showError('Gagal konversi: ' + e.message); }
+
+    } else if (mode === 'link') {
+        if (!validate([['fullNameL','Nama Lengkap'],['absentNumberL','No. Absen'],['classSelectL','Kelas'],['taskTitleL','Judul Tugas'],['taskLink','Link Tugas']])) return;
+        showLoading('Menyimpan data...'); setProgress(40);
+        try {
+            await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                mode:'link', fullName: v('fullNameL'), absentNumber: v('absentNumberL'),
+                kelas: v('classSelectL'), taskTitle: v('taskTitleL'), taskLink: v('taskLink'), notes: v('notesLink')
+            })});
+            setProgress(100); document.getElementById('statusText').textContent = 'Selesai!';
+            setTimeout(showSuccess, 800);
+        } catch(e) { showError('Koneksi bermasalah: ' + e.message); }
+    }
+}
+
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+</script>
 </body>
 </html>
