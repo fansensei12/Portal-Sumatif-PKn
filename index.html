@@ -358,6 +358,154 @@
         }
         .compress-status.off { color: var(--gray400); background: var(--gray100); }
 
+        /* ── PHOTO SOURCE BUTTONS ── */
+        .photo-source-btns {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .photo-src-btn {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 10px; padding: 20px 12px;
+            border: 2px solid var(--gray200); border-radius: 16px;
+            background: var(--gray50); cursor: pointer;
+            transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+        }
+        .photo-src-btn:hover { border-color: var(--orange); background: rgba(234,88,12,0.04); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(234,88,12,0.12); }
+        .photo-src-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+        .photo-src-icon svg { width: 26px; height: 26px; }
+        .photo-src-icon.gallery { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: var(--blue); }
+        .photo-src-icon.camera  { background: linear-gradient(135deg, #fff7ed, #fed7aa); color: var(--orange); }
+        .photo-src-label { font-size: 13px; font-weight: 700; color: var(--gray800); }
+        .photo-src-sub   { font-size: 11px; color: var(--gray400); text-align: center; }
+
+        /* ── CAMERA MODAL ── */
+        .cam-overlay {
+            position: fixed; inset: 0;
+            background: #000;
+            z-index: 2000;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .cam-overlay.show { opacity: 1; pointer-events: all; }
+
+        .cam-header {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            z-index: 10;
+        }
+        .cam-title { color: white; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .cam-title .cam-count-badge {
+            background: var(--orange); color: white;
+            font-size: 11px; font-weight: 800;
+            border-radius: 100px; padding: 2px 10px;
+            display: none;
+        }
+        .cam-title .cam-count-badge.show { display: inline; }
+        .cam-close {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: none; color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .cam-close:hover { background: rgba(255,255,255,0.3); }
+        .cam-close svg { width: 18px; height: 18px; }
+
+        #camVideo {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* canvas hidden — used for capture */
+        #camCanvas { display: none; }
+
+        .cam-footer {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 24px 20px 40px;
+            display: flex; align-items: center; justify-content: center; gap: 24px;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+            z-index: 10;
+        }
+
+        /* thumbnail strip */
+        .cam-thumb-strip {
+            position: absolute; bottom: 130px; left: 0; right: 0;
+            display: flex; gap: 8px; padding: 0 16px;
+            overflow-x: auto; z-index: 10;
+            scrollbar-width: none;
+        }
+        .cam-thumb-strip::-webkit-scrollbar { display: none; }
+        .cam-thumb {
+            width: 56px; height: 56px; flex-shrink: 0;
+            border-radius: 10px; overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.5);
+            position: relative;
+        }
+        .cam-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .cam-thumb .cam-thumb-n {
+            position: absolute; bottom: 2px; right: 4px;
+            font-size: 10px; font-weight: 700; color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* shutter button */
+        .cam-shutter {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: white; border: 4px solid rgba(255,255,255,0.4);
+            cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+            position: relative;
+        }
+        .cam-shutter:active { transform: scale(0.9); }
+        .cam-shutter-inner {
+            width: 58px; height: 58px; border-radius: 50%;
+            background: white; transition: background 0.1s;
+        }
+        .cam-shutter:active .cam-shutter-inner { background: #ddd; }
+
+        /* flash animation */
+        .cam-flash {
+            position: absolute; inset: 0;
+            background: white; opacity: 0; pointer-events: none;
+            z-index: 20; transition: opacity 0.05s;
+        }
+        .cam-flash.flash { opacity: 0.9; }
+
+        /* flip camera */
+        .cam-flip {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: none; color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.2s, transform 0.3s;
+        }
+        .cam-flip:hover { background: rgba(255,255,255,0.25); }
+        .cam-flip svg { width: 22px; height: 22px; }
+
+        /* done button */
+        .cam-done {
+            background: var(--orange); color: white;
+            border: none; border-radius: 100px;
+            padding: 13px 28px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            transition: all 0.2s; box-shadow: 0 4px 16px rgba(234,88,12,0.4);
+        }
+        .cam-done:hover { background: #c2410c; transform: translateY(-1px); }
+        .cam-done svg { width: 16px; height: 16px; }
+
+        /* cam hint */
+        .cam-hint {
+            position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.8);
+            font-size: 12px; border-radius: 100px; padding: 6px 16px;
+            white-space: nowrap; z-index: 10; backdrop-filter: blur(4px);
+            animation: fadeOut 3s forwards;
+        }
+        @keyframes fadeOut { 0%,60%{opacity:1} 100%{opacity:0;pointer-events:none} }
+
         /* ── CLOCK ── */
         .clock-wrap { margin-top:28px; display:inline-flex; flex-direction:column; align-items:center; gap:6px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:16px 36px; backdrop-filter:blur(8px); }
         .clock-time { font-family:'Playfair Display',serif; font-size:clamp(2rem,7vw,3.2rem); font-weight:700; color:#fff; letter-spacing:0.06em; line-height:1; text-shadow:0 0 30px rgba(59,130,246,0.5); }
@@ -587,13 +735,32 @@
         <div class="section-label">Foto Tugas</div>
 
         <!-- Photo drop zone -->
-        <div class="drop-area photo-drop" id="photoDropArea">
-            <input type="file" id="photoInput" style="display:none" accept="image/*" multiple>
-            <div class="drop-icon orange">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </div>
-            <h4><span class="link orange">Klik untuk pilih foto</span> atau seret ke sini</h4>
-            <p>JPG, PNG, HEIC &nbsp;·&nbsp; Bisa pilih banyak foto sekaligus</p>
+        <input type="file" id="photoInput" style="display:none" accept="image/*" multiple>
+        <input type="file" id="cameraInput" style="display:none" accept="image/*" capture="environment">
+
+        <div class="photo-source-btns">
+            <button class="photo-src-btn" onclick="document.getElementById('photoInput').click()">
+                <div class="photo-src-icon gallery">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <span class="photo-src-label">Pilih dari Galeri</span>
+                <span class="photo-src-sub">JPG, PNG, bisa banyak sekaligus</span>
+            </button>
+            <button class="photo-src-btn" onclick="openCamera()">
+                <div class="photo-src-icon camera">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <span class="photo-src-label">Ambil Foto Langsung</span>
+                <span class="photo-src-sub">Bisa foto berkali-kali</span>
+            </button>
+        </div>
+
+        <!-- drag area tetap aktif -->
+        <div class="drop-area photo-drop" id="photoDropArea" style="margin-top:10px; padding:16px 24px;">
+            <p style="font-size:12px; color:var(--gray400);">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                Atau seret &amp; lepas foto langsung ke sini
+            </p>
         </div>
 
         <!-- Thumbnail grid -->
@@ -780,7 +947,8 @@ const photoCountEl   = document.getElementById('photoCount');
 
 let photoFiles = []; // ordered array of {file, dataURL}
 
-photoDropArea.addEventListener('click', () => photoInput.click());
+// photoDropArea hanya untuk drag-drop, bukan klik
+photoDropArea.addEventListener('click', e => e.preventDefault());
 photoInput.addEventListener('change', () => addPhotos(Array.from(photoInput.files)));
 
 ['dragenter','dragover','dragleave','drop'].forEach(ev => photoDropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
@@ -856,6 +1024,127 @@ function onDragStart(e) { dragSrc = +this.dataset.idx; this.classList.add('dragg
 function onDragOver(e)  { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; document.querySelectorAll('.photo-thumb').forEach(el => el.classList.remove('drag-over')); this.classList.add('drag-over'); }
 function onDrop(e)      { e.preventDefault(); const dest = +this.dataset.idx; if (dragSrc === dest) return; const moved = photoFiles.splice(dragSrc, 1)[0]; photoFiles.splice(dest, 0, moved); renderPhotoGrid(); }
 function onDragEnd()    { document.querySelectorAll('.photo-thumb').forEach(el => el.classList.remove('dragging','drag-over')); }
+
+// ═══════════════════════════════════════════
+// CAMERA SYSTEM
+// ═══════════════════════════════════════════
+let camStream        = null;
+let camFacingMode    = 'environment'; // mulai dengan kamera belakang
+let camCapturedURLs  = [];            // dataURL foto yang diambil di sesi ini
+
+async function openCamera() {
+    // Coba pakai getUserMedia (browser modern)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        // Fallback: pakai input capture untuk HP yang tidak support getUserMedia
+        document.getElementById('cameraInput').click();
+        return;
+    }
+    camCapturedURLs = [];
+    updateCamUI();
+    document.getElementById('camOverlay').classList.add('show');
+    await startStream();
+    // Tampilkan hint
+    const hint = document.createElement('div');
+    hint.className = 'cam-hint';
+    hint.textContent = 'Tekan tombol bulat untuk mengambil foto';
+    document.getElementById('camOverlay').appendChild(hint);
+    setTimeout(() => hint.remove(), 3500);
+}
+
+async function startStream() {
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); }
+    try {
+        camStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: camFacingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+            audio: false
+        });
+        document.getElementById('camVideo').srcObject = camStream;
+    } catch(err) {
+        closeCamera();
+        // Fallback ke input capture
+        document.getElementById('cameraInput').click();
+    }
+}
+
+async function flipCamera() {
+    camFacingMode = camFacingMode === 'environment' ? 'user' : 'environment';
+    const btn = document.getElementById('camFlipBtn');
+    btn.style.transform = 'rotate(180deg)';
+    setTimeout(() => btn.style.transform = '', 300);
+    await startStream();
+}
+
+function capturePhoto() {
+    const video  = document.getElementById('camVideo');
+    const canvas = document.getElementById('camCanvas');
+    const flash  = document.getElementById('camFlash');
+
+    // Flash effect
+    flash.classList.add('flash');
+    setTimeout(() => flash.classList.remove('flash'), 150);
+
+    // Draw frame to canvas
+    canvas.width  = video.videoWidth  || 1280;
+    canvas.height = video.videoHeight || 720;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    // Get dataURL
+    const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+    camCapturedURLs.push(dataURL);
+    updateCamUI();
+
+    // Shutter animation
+    const shutter = document.getElementById('camShutter');
+    shutter.style.transform = 'scale(0.85)';
+    setTimeout(() => shutter.style.transform = '', 120);
+}
+
+function updateCamUI() {
+    const n     = camCapturedURLs.length;
+    const badge = document.getElementById('camCountBadge');
+    const done  = document.getElementById('camDoneBtn');
+    const strip = document.getElementById('camThumbStrip');
+
+    badge.textContent = n + (n === 1 ? ' foto' : ' foto');
+    badge.classList.toggle('show', n > 0);
+    done.style.display = n > 0 ? 'flex' : 'none';
+
+    // Render thumb strip
+    strip.innerHTML = '';
+    camCapturedURLs.forEach((url, i) => {
+        const div = document.createElement('div');
+        div.className = 'cam-thumb';
+        div.innerHTML = `<img src="${url}"><span class="cam-thumb-n">${i+1}</span>`;
+        strip.appendChild(div);
+    });
+    // Auto scroll to last
+    if (n > 0) strip.scrollLeft = strip.scrollWidth;
+}
+
+async function doneCamera() {
+    if (camCapturedURLs.length === 0) { closeCamera(); return; }
+    closeCamera();
+    // Convert dataURLs to File objects and add to photo list
+    const newItems = camCapturedURLs.map((url, i) => ({ file: null, dataURL: url, label: `kamera_${i+1}.jpg` }));
+    // photoFiles sudah ada, kita push langsung
+    for (const item of newItems) { photoFiles.push(item); }
+    camCapturedURLs = [];
+    renderPhotoGrid();
+}
+
+function closeCamera() {
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    document.getElementById('camVideo').srcObject = null;
+    document.getElementById('camOverlay').classList.remove('show');
+    document.getElementById('camThumbStrip').innerHTML = '';
+}
+
+// Fallback: input capture (untuk browser/HP yang tidak mendukung getUserMedia)
+document.getElementById('cameraInput').addEventListener('change', async () => {
+    const files = Array.from(document.getElementById('cameraInput').files);
+    if (files.length) await addPhotos(files);
+    document.getElementById('cameraInput').value = '';
+});
 
 // ═══════════════════════════════════════════
 // COMPRESSION CONTROLS
@@ -1007,89 +1296,162 @@ function bytesToBase64(bytes) {
 
 // Minimal valid PDF builder (no external library)
 function buildPdf(imgObjs, pageW, pageH, margin) {
+    // PDF objects:
+    // 1 = Catalog, 2 = Pages
+    // per image i: 3+i*3 = Page, 4+i*3 = Content stream, 5+i*3 = Image XObject
     const enc = new TextEncoder();
-    const parts = [];
+    const chunks = [];   // Uint8Array pieces
+    const offsets = {};  // objNum -> byte offset
     let pos = 0;
-    const offsets = [];
 
-    function w(s) { const b = typeof s === 'string' ? enc.encode(s) : s; parts.push(b); pos += b.length; }
-    function obj(n, s) { offsets[n] = pos; w(`${n} 0 obj\n${s}\nendobj\n`); }
-
-    // Header
-    w('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
-
-    const nPages = imgObjs.length;
-    // Object layout: 1=catalog, 2=pages, 3..=(page,img) pairs -> 3+2*i=page, 4+2*i=img
-    const catalogObj = 1;
-    const pagesObj   = 2;
-    const firstPage  = 3; // pages at 3,5,7,... images at 4,6,8,...
-
-    const pageObjNums = imgObjs.map((_, i) => firstPage + i * 2);
-    const imgObjNums  = imgObjs.map((_, i) => firstPage + i * 2 + 1);
-
-    // Image objects (XObjects)
-    imgObjs.forEach((img, i) => {
-        obj(imgObjNums[i],
-            `<< /Type /XObject /Subtype /Image\n` +
-            `/Width ${img.w} /Height ${img.h}\n` +
-            `/ColorSpace /DeviceRGB /BitsPerComponent 8\n` +
-            `/Filter /DCTDecode\n` +
-            `/Length ${img.bytes.length}\n>>\nstream\n`
-        );
-        w(img.bytes);
-        w('\nendstream');
-    });
-
-    // Page objects
-    pageObjNums.forEach((pNum, i) => {
-        const img = imgObjs[i];
-        const imgN = imgObjNums[i];
-        // Center image on page
-        const x = (pageW - img.w) / 2;
-        const y = (pageH - img.h) / 2;
-        const stream =
-            `q\n${img.w} 0 0 ${img.h} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im${i} Do\nQ`;
-        const streamBytes = enc.encode(stream);
-
-        obj(pNum,
-            `<< /Type /Page /Parent ${pagesObj} 0 R\n` +
-            `/MediaBox [0 0 ${pageW} ${pageH}]\n` +
-            `/Resources << /XObject << /Im${i} ${imgN} 0 R >> >>\n` +
-            `/Contents ${pNum + 100} 0 R\n>>`
-        );
-        // content stream as separate object; use high obj nums to avoid collision
-        obj(pNum + 100,
-            `<< /Length ${streamBytes.length} >>\nstream\n` +
-            stream + `\nendstream`
-        );
-    });
-
-    // Pages dict
-    obj(pagesObj,
-        `<< /Type /Pages\n/Kids [${pageObjNums.map(n => n + ' 0 R').join(' ')}]\n/Count ${nPages} >>`
-    );
-
-    // Catalog
-    obj(catalogObj, `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`);
-
-    // xref
-    const xrefPos = pos;
-    const totalObjs = offsets.length; // sparse; find max
-    const maxObj = Math.max(...Object.keys(offsets).map(Number));
-    w(`xref\n0 ${maxObj + 1}\n`);
-    w(`0000000000 65535 f \n`);
-    for (let n = 1; n <= maxObj; n++) {
-        const off = offsets[n];
-        w(off !== undefined ? String(off).padStart(10,'0') + ' 00000 n \n' : '0000000000 65535 f \n');
+    function push(data) {
+        const b = (data instanceof Uint8Array) ? data : enc.encode(data);
+        chunks.push(b);
+        pos += b.length;
     }
-    w(`trailer\n<< /Size ${maxObj + 1} /Root ${catalogObj} 0 R >>\n`);
-    w(`startxref\n${xrefPos}\n%%EOF\n`);
 
-    // Concat all parts
-    const total = parts.reduce((s, b) => s + b.length, 0);
+    function beginObj(n) { offsets[n] = pos; push(`${n} 0 obj
+`); }
+    function endObj()    { push('endobj
+'); }
+
+    // ── PDF header ──
+    push('%PDF-1.4
+');
+    push(new Uint8Array([0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A])); // binary comment
+
+    const nPages     = imgObjs.length;
+    const catalogNum = 1;
+    const pagesNum   = 2;
+    const pageNums   = imgObjs.map((_, i) => 3 + i * 3);
+    const contNums   = imgObjs.map((_, i) => 4 + i * 3);
+    const imgNums    = imgObjs.map((_, i) => 5 + i * 3);
+
+    // ── Image XObjects ──
+    imgObjs.forEach((img, i) => {
+        beginObj(imgNums[i]);
+        push(
+            `<< /Type /XObject /Subtype /Image
+` +
+            `/Width ${img.w} /Height ${img.h}
+` +
+            `/ColorSpace /DeviceRGB /BitsPerComponent 8
+` +
+            `/Filter /DCTDecode
+` +
+            `/Length ${img.bytes.length}
+` +
+            `>>
+` +
+            `stream
+`
+        );
+        push(img.bytes);          // raw JPEG bytes
+        push('
+endstream
+');
+        endObj();
+    });
+
+    // ── Content streams (page drawing commands) ──
+    imgObjs.forEach((img, i) => {
+        // PDF coordinate: y=0 is bottom-left; center image on A4 page
+        const drawW = img.w;
+        const drawH = img.h;
+        const x = ((pageW - drawW) / 2).toFixed(4);
+        const y = ((pageH - drawH) / 2).toFixed(4);
+        const ops = `q
+${drawW} 0 0 ${drawH} ${x} ${y} cm
+/Im${i} Do
+Q
+`;
+        const opsBytes = enc.encode(ops);
+
+        beginObj(contNums[i]);
+        push(`<< /Length ${opsBytes.length} >>
+stream
+`);
+        push(opsBytes);
+        push('
+endstream
+');
+        endObj();
+    });
+
+    // ── Page objects ──
+    imgObjs.forEach((img, i) => {
+        beginObj(pageNums[i]);
+        push(
+            `<< /Type /Page
+` +
+            `/Parent ${pagesNum} 0 R
+` +
+            `/MediaBox [0 0 ${pageW} ${pageH}]
+` +
+            `/Contents ${contNums[i]} 0 R
+` +
+            `/Resources << /XObject << /Im${i} ${imgNums[i]} 0 R >> >>
+` +
+            `>>
+`
+        );
+        endObj();
+    });
+
+    // ── Pages dictionary ──
+    beginObj(pagesNum);
+    push(
+        `<< /Type /Pages
+` +
+        `/Kids [${pageNums.map(n => `${n} 0 R`).join(' ')}]
+` +
+        `/Count ${nPages}
+` +
+        `>>
+`
+    );
+    endObj();
+
+    // ── Catalog ──
+    beginObj(catalogNum);
+    push(`<< /Type /Catalog /Pages ${pagesNum} 0 R >>
+`);
+    endObj();
+
+    // ── Cross-reference table ──
+    const xrefPos = pos;
+    const allNums = Object.keys(offsets).map(Number).sort((a, b) => a - b);
+    const maxObj  = allNums[allNums.length - 1];
+
+    push(`xref
+0 ${maxObj + 1}
+`);
+    push(`0000000000 65535 f 
+`);   // object 0 (free)
+    for (let n = 1; n <= maxObj; n++) {
+        if (offsets[n] !== undefined) {
+            push(String(offsets[n]).padStart(10, '0') + ' 00000 n 
+');
+        } else {
+            push('0000000000 65535 f 
+');
+        }
+    }
+
+    // ── Trailer ──
+    push(`trailer
+<< /Size ${maxObj + 1} /Root ${catalogNum} 0 R >>
+`);
+    push(`startxref
+${xrefPos}
+%%EOF
+`);
+
+    // ── Assemble all chunks ──
+    const total = chunks.reduce((s, b) => s + b.length, 0);
     const out   = new Uint8Array(total);
-    let offset  = 0;
-    for (const b of parts) { out.set(b, offset); offset += b.length; }
+    let off = 0;
+    for (const b of chunks) { out.set(b, off); off += b.length; }
     return 'data:application/pdf;base64,' + bytesToBase64(out);
 }
 
@@ -1301,6 +1663,42 @@ function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
     setInterval(tick, 1000);
 })();
 </script>
+
+<!-- ═══ CAMERA MODAL ═══ -->
+<div class="cam-overlay" id="camOverlay">
+  <div class="cam-flash" id="camFlash"></div>
+
+  <div class="cam-header">
+    <div class="cam-title">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Ambil Foto Tugas
+      <span class="cam-count-badge" id="camCountBadge">0 foto</span>
+    </div>
+    <button class="cam-close" onclick="closeCamera()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <video id="camVideo" autoplay playsinline muted></video>
+  <canvas id="camCanvas"></canvas>
+
+  <div class="cam-thumb-strip" id="camThumbStrip"></div>
+
+  <div class="cam-footer">
+    <button class="cam-flip" id="camFlipBtn" onclick="flipCamera()" title="Ganti kamera">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+    </button>
+
+    <button class="cam-shutter" id="camShutter" onclick="capturePhoto()">
+      <div class="cam-shutter-inner"></div>
+    </button>
+
+    <button class="cam-done" id="camDoneBtn" onclick="doneCamera()" style="display:none">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      Selesai
+    </button>
+  </div>
+</div>
 
 <!-- ═══ POPUP: WARNING (field kosong) ═══ -->
 <div class="popup-overlay" id="popupWarning">
