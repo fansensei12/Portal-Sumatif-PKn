@@ -64,6 +64,7 @@ input[type=text],input[type=number],input[type=url],select,textarea{width:100%;p
 input:focus,select:focus,textarea:focus{border-color:var(--blue-lt);box-shadow:0 0 0 4px rgba(59,130,246,.09);background:#fff}
 textarea{resize:vertical;min-height:85px;line-height:1.6}
 .two-col{display:grid;grid-template-columns:3fr 1.2fr;gap:12px}
+.two-col.even{grid-template-columns:1fr 1fr}
 
 /* FILE DROP */
 .drop-area{border:2px dashed var(--gray200);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s}
@@ -344,6 +345,11 @@ footer strong{color:var(--gray600)}
         <optgroup label="Kelas 9"><option>9A</option><option>9B</option><option>9C</option><option>9D</option><option>9E</option><option>9F</option><option>9G</option></optgroup>
       </select>
     </div>
+
+    <div class="two-col even">
+      <div class="field-group"><label for="fNis">NIS <sup>*</sup></label><input type="text" id="fNis" class="nis-input" inputmode="numeric" maxlength="20" placeholder="Nomor Induk Siswa"></div>
+      <div class="field-group"><label for="fNisn">NISN <sup>*</sup></label><input type="text" id="fNisn" class="nis-input" inputmode="numeric" maxlength="10" placeholder="10 digit"></div>
+    </div>
     <div class="section-label">Detail Tugas</div>
     <div class="field-group"><label for="fJudul">Judul Tugas <sup>*</sup></label><input type="text" id="fJudul" placeholder="Contoh: Tugas Mandiri Bab 3"></div>
     <div class="field-group"><label>File Tugas <sup>*</sup></label>
@@ -378,6 +384,11 @@ footer strong{color:var(--gray600)}
         <optgroup label="Kelas 8"><option>8A</option><option>8B</option><option>8C</option><option>8D</option><option>8E</option><option>8F</option><option>8G</option></optgroup>
         <optgroup label="Kelas 9"><option>9A</option><option>9B</option><option>9C</option><option>9D</option><option>9E</option><option>9F</option><option>9G</option></optgroup>
       </select>
+    </div>
+
+    <div class="two-col even">
+      <div class="field-group"><label for="pNis">NIS <sup>*</sup></label><input type="text" id="pNis" class="nis-input" inputmode="numeric" maxlength="20" placeholder="Nomor Induk Siswa"></div>
+      <div class="field-group"><label for="pNisn">NISN <sup>*</sup></label><input type="text" id="pNisn" class="nis-input" inputmode="numeric" maxlength="10" placeholder="10 digit"></div>
     </div>
 
     <div class="section-label">Foto Tugas</div>
@@ -470,6 +481,11 @@ footer strong{color:var(--gray600)}
         <optgroup label="Kelas 9"><option>9A</option><option>9B</option><option>9C</option><option>9D</option><option>9E</option><option>9F</option><option>9G</option></optgroup>
       </select>
     </div>
+
+    <div class="two-col even">
+      <div class="field-group"><label for="lNis">NIS <sup>*</sup></label><input type="text" id="lNis" class="nis-input" inputmode="numeric" maxlength="20" placeholder="Nomor Induk Siswa"></div>
+      <div class="field-group"><label for="lNisn">NISN <sup>*</sup></label><input type="text" id="lNisn" class="nis-input" inputmode="numeric" maxlength="10" placeholder="10 digit"></div>
+    </div>
     <div class="section-label">Detail Tugas</div>
     <div class="field-group"><label for="lJudul">Judul Tugas <sup>*</sup></label><input type="text" id="lJudul" placeholder="Contoh: Tugas Mandiri Bab 3"></div>
     <div class="field-group"><label for="lLink">Link Tugas <sup>*</sup></label>
@@ -535,6 +551,8 @@ footer strong{color:var(--gray600)}
           <div class="popup-id-row full"><div class="popup-id-label">Nama</div><div class="popup-id-value highlight" id="pid-name">-</div></div>
           <div class="popup-id-row"><div class="popup-id-label">No. Absen</div><div class="popup-id-value" id="pid-absen">-</div></div>
           <div class="popup-id-row"><div class="popup-id-label">Kelas</div><div class="popup-id-value" id="pid-kelas">-</div></div>
+          <div class="popup-id-row"><div class="popup-id-label">NIS</div><div class="popup-id-value" id="pid-nis">-</div></div>
+          <div class="popup-id-row"><div class="popup-id-label">NISN</div><div class="popup-id-value" id="pid-nisn">-</div></div>
           <div class="popup-id-row full"><div class="popup-id-label">Judul Tugas</div><div class="popup-id-value" id="pid-judul">-</div></div>
           <div class="popup-id-row full" id="pid-link-row" style="display:none"><div class="popup-id-label">Link</div><div class="popup-id-value" id="pid-link" style="font-size:11px;word-break:break-all;opacity:.8">-</div></div>
         </div>
@@ -549,7 +567,7 @@ footer strong{color:var(--gray600)}
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhezv8JbyAyZbMvABKjmgwSstIDEVlv5JXv54gMqjOWcTWSCTs099OK7ShFNADrI2y/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtNTHT3Rcc8CrsbwSyybcGfd72HXeP9KsETqyg8LwxnD8R_7JHnQR_CKTMa4PnCm6/exec';
 
 // ── CLOCK ──
 (function(){
@@ -824,14 +842,14 @@ function closePopup(id){document.getElementById(id).classList.remove('show')}
 function closePopupAndReset(){closePopup('popupSuccess');resetAll()}
 document.addEventListener('click',e=>{if(e.target.classList.contains('popup-overlay'))e.target.classList.remove('show')});
 
-function showWarnPopup(label,focusId){
+function showWarnPopup(label,focusId,customTitle,customMsg){
   const msgs={
     'Nama':'Kolom nama wajib diisi agar data dapat diidentifikasi.','No. Absen':'Nomor absen diperlukan untuk pencatatan data.',
-    'Kelas':'Pilih kelas Anda.','Judul Tugas':'Judul tugas diperlukan agar guru tahu tugas apa yang dikumpulkan.',
+    'Kelas':'Pilih kelas Anda.','NIS':'NIS diperlukan untuk identifikasi siswa.','NISN':'NISN diperlukan untuk identifikasi siswa.','Judul Tugas':'Judul tugas diperlukan agar guru tahu tugas apa yang dikumpulkan.',
     'Link':'Masukkan URL link tugas.','File':'Pilih file tugas terlebih dahulu.','Foto':'Pilih minimal 1 foto.'
   };
-  document.getElementById('popupWarnField').textContent=label+' wajib diisi';
-  document.getElementById('popupWarnMsg').textContent=msgs[label]||'Mohon lengkapi semua kolom wajib.';
+  document.getElementById('popupWarnField').textContent=customTitle||(label+' wajib diisi');
+  document.getElementById('popupWarnMsg').textContent=customMsg||msgs[label]||'Mohon lengkapi semua kolom wajib.';
   document.getElementById('popupWarning').classList.add('show');
   if(focusId)setTimeout(()=>document.getElementById(focusId)?.focus(),300);
 }
@@ -846,6 +864,8 @@ function showSuccessPopup(info){
   document.getElementById('pid-name').textContent=info.name||'-';
   document.getElementById('pid-absen').textContent=info.absen||'-';
   document.getElementById('pid-kelas').textContent=info.kelas||'-';
+  document.getElementById('pid-nis').textContent=info.nis||'-';
+  document.getElementById('pid-nisn').textContent=info.nisn||'-';
   document.getElementById('pid-judul').textContent=info.judul||'-';
   const lr=document.getElementById('pid-link-row');
   if(info.link){lr.style.display='';document.getElementById('pid-link').textContent=info.link}else{lr.style.display='none'}
@@ -890,22 +910,32 @@ function validate(checks){
   return true;
 }
 
+function validateNis(p){
+  const nis=g(p+'Nis'), nisn=g(p+'Nisn');
+  if(!/^\d+$/.test(nis)){showWarnPopup('NIS',p+'Nis','NIS tidak valid','NIS hanya boleh berisi angka.');return false}
+  if(!/^\d{10}$/.test(nisn)){showWarnPopup('NISN',p+'Nisn','NISN harus 10 digit','NISN terdiri dari 10 angka. Periksa kembali.');return false}
+  return true;
+}
+document.querySelectorAll('.nis-input').forEach(el=>el.addEventListener('input',()=>{el.value=el.value.replace(/\D/g,'')}));
+
 // ── SUBMIT ──
 async function submitForm(mode){
   if(mode==='file'){
-    if(!validate([['fName','Nama'],['fAbsen','No. Absen'],['fKelas','Kelas'],['fJudul','Judul Tugas']])) return;
+    if(!validate([['fName','Nama'],['fAbsen','No. Absen'],['fKelas','Kelas'],['fNis','NIS'],['fNisn','NISN'],['fJudul','Judul Tugas']])) return;
+    if(!validateNis('f')) return;
     if(!fileInput.files[0]){showWarnPopup('File',null);return}
     showLoading('Mengolah dokumen...'); setProgress(25);
     try{
       const b64=await toB64(fileInput.files[0]);
       document.getElementById('statusText').textContent='Mengunggah...'; setProgress(65);
-      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'file',fullName:g('fName'),absentNumber:g('fAbsen'),kelas:g('fKelas'),taskTitle:g('fJudul'),notes:g('fNotes'),fileName:fileInput.files[0].name,fileData:b64})});
+      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'file',fullName:g('fName'),absentNumber:g('fAbsen'),kelas:g('fKelas'),nis:g('fNis'),nisn:g('fNisn'),taskTitle:g('fJudul'),notes:g('fNotes'),fileName:fileInput.files[0].name,fileData:b64})});
       setProgress(100); document.getElementById('statusText').textContent='Selesai!';
-      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'file',name:g('fName'),absen:g('fAbsen'),kelas:g('fKelas'),judul:g('fJudul'),notes:g('fNotes')})},800);
+      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'file',name:g('fName'),absen:g('fAbsen'),kelas:g('fKelas'),nis:g('fNis'),nisn:g('fNisn'),judul:g('fJudul'),notes:g('fNotes')})},800);
     }catch(e){showError('Koneksi bermasalah: '+e.message)}
 
   }else if(mode==='photo'){
-    if(!validate([['pName','Nama'],['pAbsen','No. Absen'],['pKelas','Kelas'],['pJudul','Judul Tugas']])) return;
+    if(!validate([['pName','Nama'],['pAbsen','No. Absen'],['pKelas','Kelas'],['pNis','NIS'],['pNisn','NISN'],['pJudul','Judul Tugas']])) return;
+    if(!validateNis('p')) return;
     if(!photoFiles.length){showWarnPopup('Foto',null);return}
     showLoading('Mengonversi foto ke PDF...'); setProgress(15);
     try{
@@ -915,18 +945,19 @@ async function submitForm(mode){
       });
       document.getElementById('statusText').textContent='Mengunggah PDF...'; setProgress(75);
       const nm=(g('pJudul')||'tugas').replace(/\s+/g,'_')+'_'+g('pName').replace(/\s+/g,'_')+'.pdf';
-      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'photo_pdf',fullName:g('pName'),absentNumber:g('pAbsen'),kelas:g('pKelas'),taskTitle:g('pJudul'),notes:g('pNotes'),fileName:nm,fileData:pdf})});
+      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'photo_pdf',fullName:g('pName'),absentNumber:g('pAbsen'),kelas:g('pKelas'),nis:g('pNis'),nisn:g('pNisn'),taskTitle:g('pJudul'),notes:g('pNotes'),fileName:nm,fileData:pdf})});
       setProgress(100); document.getElementById('statusText').textContent='Selesai!';
-      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'photo_pdf',name:g('pName'),absen:g('pAbsen'),kelas:g('pKelas'),judul:g('pJudul'),notes:g('pNotes')})},800);
+      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'photo_pdf',name:g('pName'),absen:g('pAbsen'),kelas:g('pKelas'),nis:g('pNis'),nisn:g('pNisn'),judul:g('pJudul'),notes:g('pNotes')})},800);
     }catch(e){showError('Gagal: '+e.message)}
 
   }else if(mode==='link'){
-    if(!validate([['lName','Nama'],['lAbsen','No. Absen'],['lKelas','Kelas'],['lJudul','Judul Tugas'],['lLink','Link']])) return;
+    if(!validate([['lName','Nama'],['lAbsen','No. Absen'],['lKelas','Kelas'],['lNis','NIS'],['lNisn','NISN'],['lJudul','Judul Tugas'],['lLink','Link']])) return;
+    if(!validateNis('l')) return;
     showLoading('Menyimpan data...'); setProgress(40);
     try{
-      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'link',fullName:g('lName'),absentNumber:g('lAbsen'),kelas:g('lKelas'),taskTitle:g('lJudul'),taskLink:g('lLink'),notes:g('lNotes')})});
+      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({mode:'link',fullName:g('lName'),absentNumber:g('lAbsen'),kelas:g('lKelas'),nis:g('lNis'),nisn:g('lNisn'),taskTitle:g('lJudul'),taskLink:g('lLink'),notes:g('lNotes')})});
       setProgress(100); document.getElementById('statusText').textContent='Selesai!';
-      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'link',name:g('lName'),absen:g('lAbsen'),kelas:g('lKelas'),judul:g('lJudul'),link:g('lLink'),notes:g('lNotes')})},800);
+      setTimeout(()=>{document.getElementById('loadingPanel').classList.remove('show');document.querySelector('.tab-switcher').style.display='';switchTab(currentTab);showSuccessPopup({mode:'link',name:g('lName'),absen:g('lAbsen'),kelas:g('lKelas'),nis:g('lNis'),nisn:g('lNisn'),judul:g('lJudul'),link:g('lLink'),notes:g('lNotes')})},800);
     }catch(e){showError('Koneksi bermasalah: '+e.message)}
   }
 }
